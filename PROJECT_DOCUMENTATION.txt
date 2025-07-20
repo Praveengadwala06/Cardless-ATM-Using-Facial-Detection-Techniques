@@ -1,0 +1,132 @@
+Project Documentation for Card Less ATM Project
+===============================================
+
+1. Project Structure Overview
+-----------------------------
+- app.py
+- software.py
+- sw.py
+- bank_details.csv
+- requirements.txt
+- templates/
+  - index.html
+- dataset/
+  - [User face image folders]
+- face_detection_model/
+  - deploy.prototxt
+  - res10_300x300_ssd_iter_140000.caffemodel
+- output/
+  - embeddings.pickle
+  - le.pickle
+  - recognizer.pickle
+- images/
+- ATM_FACE_RECOGNITION_DOCUMENTATION/
+  - Various documentation files (pptx, pdf)
+
+2. Components Description
+-------------------------
+- app.py:
+  A Flask web application that provides basic routes:
+  - '/' : Renders the home page (index.html)
+  - '/enroll' (POST): Accepts user name and password, saves to bank_details.csv
+  - '/login' (POST): Authenticates user credentials against bank_details.csv
+  This app serves as a simple web interface for enrollment and login.
+
+- software.py and sw.py:
+  Both files implement a Tkinter GUI application for the ATM system.
+  They include:
+  - BankUi class: Main GUI class handling multiple pages and user interactions.
+  - Enrollment page: User inputs name and password, saved to CSV.
+  - Face capture: Uses OpenCV to capture face images for the user.
+  - Face recognition: Uses OpenCV DNN face detector and OpenFace embeddings.
+  - Model training: Trains an SVM classifier on face embeddings.
+  - Verification: Matches live face with trained model and verifies password.
+  - Banking operations: Transfer, balance enquiry, deposit, withdrawal.
+  - Uses bank_details.csv to store and update user account data.
+  - Provides user feedback via message boxes or JSON responses.
+  - Runs the Tkinter mainloop to display the GUI.
+
+- face_detection_model/:
+  Contains pre-trained models for face detection:
+  - deploy.prototxt: Model architecture for Caffe-based face detector.
+  - res10_300x300_ssd_iter_140000.caffemodel: Pre-trained weights.
+
+- dataset/:
+  Contains subfolders named by user unique IDs, each with face images captured during enrollment.
+
+- output/:
+  Stores serialized data:
+  - embeddings.pickle: Face embeddings extracted from dataset images.
+  - le.pickle: Label encoder for user names.
+  - recognizer.pickle: Trained SVM face recognition model.
+
+- templates/index.html:
+  HTML template for the Flask app home page.
+
+- bank_details.csv:
+  CSV file storing user data with columns:
+  unique_id, account_number, name, bank, password, account_balance
+
+3. Project Flow
+---------------
+- Enrollment:
+  1. User inputs name and password in GUI or web form.
+  2. Data saved to bank_details.csv with generated unique_id and account_number.
+  3. Face images captured via webcam and saved in dataset folder.
+  4. Face embeddings extracted using OpenCV DNN and OpenFace model.
+  5. SVM model trained on embeddings and saved to output folder.
+
+- Login and Transactions:
+  1. User initiates login via GUI or web.
+  2. Face recognition performed using webcam and trained model.
+  3. If face matches, user prompted for password verification.
+  4. Upon successful verification, user can perform:
+     - Balance enquiry
+     - Deposit money
+     - Withdraw money
+     - Transfer money to another account
+  5. All transactions update bank_details.csv accordingly.
+
+4. Key Imports and Libraries
+----------------------------
+- Flask: Web framework for app.py
+- Tkinter: GUI framework for software.py and sw.py
+- OpenCV (cv2): Image processing and face detection
+- imutils: Image utilities and video stream handling
+- sklearn: Machine learning for face recognition (SVM, LabelEncoder)
+- pandas: Data handling for CSV files
+- numpy: Numerical operations
+- pickle: Serialization of models and data
+- threading: Running Flask app in parallel with GUI
+
+5. How to Implement and Run
+---------------------------
+- Install required dependencies from requirements.txt (Flask, OpenCV, imutils, sklearn, pandas, numpy, etc.)
+- Run software.py or sw.py to launch the ATM GUI application.
+- The GUI allows user enrollment, face capture, and banking operations.
+- Alternatively, run app.py to start the Flask web app for enrollment and login.
+- Ensure the face_detection_model and dataset folders are present with required files.
+- The output folder will be created/updated with embeddings and trained models.
+- bank_details.csv stores user account data and must be accessible.
+
+6. Explanation of Major Functions and Classes
+---------------------------------------------
+- BankUi class (software.py, sw.py):
+  Handles the entire ATM GUI flow including:
+  - begin_page: Main menu with enroll and login options
+  - enroll_user: Enrollment form for name and password
+  - enroll_and_move_to_next_screen: Validates input and proceeds to face capture
+  - video_capture_page: Captures face images from webcam
+  - captureuser: Saves face images and triggers embedding extraction and model training
+  - get_embeddings: Extracts face embeddings from dataset images
+  - train_model: Trains SVM classifier on embeddings
+  - video_check: Performs live face recognition
+  - password_verification: Verifies user password after face match
+  - final_page: Menu for banking operations
+  - user_account_transfer, user_balance, user_deposit_money, user_withdrawl_money: Banking functions updating CSV
+  - write_to_csv: Saves new user data to CSV
+
+- Flask app (app.py):
+  Provides simple web routes for enrollment and login using CSV storage.
+
+This documentation provides a complete overview of the Card Less ATM project, its components, flows, and implementation details.
