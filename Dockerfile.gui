@@ -1,0 +1,43 @@
+# Use Ubuntu as base image
+FROM ubuntu:22.04
+
+# Set environment variables
+ENV DEBIAN_FRONTEND=noninteractive
+ENV DISPLAY=:1
+ENV VNC_PORT=5901
+ENV NO_VNC_PORT=6901
+ENV USER=root
+
+# Install dependencies
+RUN apt-get update && apt-get install -y \
+    python3 \
+    python3-pip \
+    python3-tk \
+    python3-opencv \
+    xvfb \
+    x11vnc \
+    fluxbox \
+    wget \
+    net-tools \
+    supervisor \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install Python packages
+COPY requirements.txt /app/requirements.txt
+RUN pip3 install --upgrade pip
+RUN pip3 install -r /app/requirements.txt
+
+# Copy project files
+COPY . /app
+WORKDIR /app
+
+# Setup supervisor to run Xvfb, fluxbox, x11vnc and the Python app
+RUN mkdir -p /var/log/supervisor
+
+COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
+
+# Expose VNC port
+EXPOSE 5901
+
+# Start supervisor
+CMD ["/usr/bin/supervisord", "-n", "-c", "/etc/supervisor/conf.d/supervisord.conf"]

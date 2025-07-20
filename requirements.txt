@@ -3,3 +3,4 @@ opencv-python
 imutils
 pandas
 scikit-learn
+gunicorn
